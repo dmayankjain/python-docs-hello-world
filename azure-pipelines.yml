@@ -30,15 +30,15 @@ steps:
     pip install -r requirements.txt
   displayName: 'Install dependencies'
   
-- script: |    
-    python app.py sdist 
-  displayName: 'Artifact creation'
+- task: ArchiveFiles@2
+  displayName: 'Archive files'
+  inputs:
+    rootFolderOrFile: '$(projectRoot)'
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    replaceExistingArchive: true
 
-- task: CopyFiles@2  
-  inputs:    
-    targetFolder: $(Build.ArtifactStagingDirectory)
-- task: PublishBuildArtifacts@1  
-  inputs:    
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'                  
-    ArtifactName: 'dist'    
-    publishLocation: 'Container'
+- upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+  displayName: 'Upload package'
+  artifact: drop
